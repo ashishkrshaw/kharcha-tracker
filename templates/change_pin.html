@@ -1,0 +1,55 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="row justify-content-center">
+  <div class="col-md-5 col-sm-8">
+    <div class="card p-4">
+      <div class="d-flex align-items-center mb-3">
+        <a href="{{ url_for('dashboard') }}" class="btn btn-outline-secondary btn-sm me-3">
+          <i class="bi bi-arrow-left"></i>
+        </a>
+        <h4 class="mb-0 fw-bold">Change PIN for {{ current_user.name }}</h4>
+      </div>
+
+      <div class="alert alert-info py-2 small">
+        <i class="bi bi-shield-exclamation me-1"></i>
+        Changing your PIN will <strong>immediately invalidate</strong> your old PIN. Your new PIN will be required for all future logins.
+      </div>
+
+      <form method="post" action="{{ url_for('change_pin') }}">
+        <div class="mb-3">
+          <label class="form-label fw-semibold">Current (Old) PIN</label>
+          <div class="input-group">
+            <span class="input-group-text"><i class="bi bi-unlock"></i></span>
+            <input type="password" name="old_pin" class="form-control" placeholder="Enter current PIN" required inputmode="numeric" autofocus>
+          </div>
+        </div>
+
+        <div class="mb-3">
+          <label class="form-label fw-semibold">New PIN</label>
+          <div class="input-group">
+            <span class="input-group-text"><i class="bi bi-lock"></i></span>
+            <input type="password" name="new_pin" class="form-control" placeholder="Enter new 4+ digit PIN" required inputmode="numeric" minlength="4">
+          </div>
+          <div class="form-text">Must be at least 4 digits (numbers only).</div>
+        </div>
+
+        <div class="mb-4">
+          <label class="form-label fw-semibold">Confirm New PIN</label>
+          <div class="input-group">
+            <span class="input-group-text"><i class="bi bi-check2-circle"></i></span>
+            <input type="password" name="confirm_pin" class="form-control" placeholder="Re-enter new PIN" required inputmode="numeric" minlength="4">
+          </div>
+        </div>
+
+        <div class="d-grid gap-2">
+          <button type="submit" class="btn btn-success fw-bold">
+            <i class="bi bi-check-lg me-1"></i> Update PIN Now
+          </button>
+          <a href="{{ url_for('dashboard') }}" class="btn btn-light">Cancel</a>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>
+{% endblock %}

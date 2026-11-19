@@ -1,0 +1,51 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="row justify-content-center pt-4">
+  <div class="col-md-5 col-sm-8">
+    <div class="card shadow-sm p-4">
+      <div class="text-center mb-4">
+        <div class="d-inline-flex align-items-center justify-content-center bg-primary text-white rounded-circle mb-3" style="width: 60px; height: 60px;">
+          <i class="bi bi-shield-lock-fill fs-2"></i>
+        </div>
+        <h3 class="fw-bold">PIN Login</h3>
+        <p class="text-muted small">Select your account and enter your secret PIN</p>
+      </div>
+
+      <form method="post" action="{{ url_for('login') }}">
+        <div class="mb-3">
+          <label class="form-label fw-semibold">Select Account</label>
+          <select name="name" id="userSelect" class="form-select form-select-lg" required>
+            <option value="" disabled selected>-- Select Person --</option>
+            {% for u in users %}
+              <option value="{{ u.name }}">{{ u.name }}</option>
+            {% else %}
+              <option value="Ashish">Ashish</option>
+              <option value="Uncle">Uncle</option>
+            {% endfor %}
+          </select>
+        </div>
+
+        <div class="mb-4">
+          <label class="form-label fw-semibold">Enter Your PIN</label>
+          <div class="input-group input-group-lg">
+            <span class="input-group-text"><i class="bi bi-key"></i></span>
+            <input type="password" name="pin" class="form-control" placeholder="••••" required autofocus inputmode="numeric" pattern="[0-9]*">
+          </div>
+          <div class="form-text">Keep your PIN confidential. Each person has a separate PIN.</div>
+        </div>
+
+        <button type="submit" class="btn btn-primary btn-lg w-100 fw-bold">
+          <i class="bi bi-box-arrow-in-right me-1"></i> Unlock Dashboard
+        </button>
+      </form>
+
+      <div class="mt-4 p-3 bg-light rounded text-center small text-muted">
+        <strong>Default Setup:</strong><br>
+        Ashish (PIN: <code>5678</code>) &bull; Uncle (PIN: <code>1234</code>)<br>
+        <span class="text-danger">⚠️ You can change your PIN anytime after logging in!</span>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}
