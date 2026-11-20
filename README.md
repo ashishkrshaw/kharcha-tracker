@@ -18,10 +18,9 @@ A shared, secure expense ledger built exclusively for **Ashish & Amit Uncle**.
    - Triggers an email security alert.
 3. **Clean Ledger (No Demo Data)**:
    - Starts with 0 demo transactions. Ready for real entries.
-4. **Data Never Erased on Deploy**:
-   - Supports **Render Free PostgreSQL** (or Supabase/Neon) via `DATABASE_URL`.
-   - Also supports **Render Persistent Disks** (`/var/data` or `/data`).
-   - Connecting a database ensures your expenses and PINs remain permanent across every deploy and container restart!
+4. **Permanent Cloud Sync with JSONBin.io (Never Erased)**:
+   - Synchronizes all expenses, edit requests, and custom PINs with **JSONBin.io**.
+   - Whenever Render restarts or redeploys, data is automatically restored from the cloud.
 5. **Separate Calculations**:
    - Totals for Ashish and Amit Uncle are tracked separately per currency (`INR`, `AED`, `USD`, `EUR`). No mixing!
 6. **12-Minute Edit Window**:
@@ -32,21 +31,19 @@ A shared, secure expense ledger built exclusively for **Ashish & Amit Uncle**.
 
 ---
 
-## 🔒 Keeping Data Permanent on Render (Never Erased)
+## ☁️ How to Connect JSONBin.io (Data is NEVER Erased)
 
-On Render's free tier, application code restarts on fresh containers. To ensure data is **never erased on any deploy**:
+1. Go to **[https://jsonbin.io](https://jsonbin.io)** and log in / create a free account.
+2. In the sidebar, go to **API Keys** $\rightarrow$ copy your **Master Key** (starts with `$2a$10$...`).
+3. Click **"Create Bin"** (top right) $\rightarrow$ paste empty JSON `{}` $\rightarrow$ click **Save** $\rightarrow$ copy the **Bin ID** (e.g. `673ea...`).
+4. Go to your **Render Web Service** $\rightarrow$ **Environment** $\rightarrow$ add these two environment variables:
+   * **`JSONBIN_API_KEY`**: *(paste your Master Key)*
+   * **`JSONBIN_BIN_ID`**: *(paste your Bin ID)*
+5. Click **Save Changes**.
 
-### Option 1 (Recommended & 100% Free): Render PostgreSQL Database
-1. In your [Render Dashboard](https://dashboard.render.com/), click **New +** $\rightarrow$ **PostgreSQL**.
-2. Give it a name (e.g., `dubaidiary-db`), choose the Free plan, and click **Create Database**.
-3. Copy the **Internal Database URL** (starts with `postgres://...`).
-4. Go to your `kharcha-tracker` Web Service $\rightarrow$ **Environment**.
-5. Add an Environment Variable:
-   - **Key:** `DATABASE_URL`
-   - **Value:** *(paste the Internal Database URL)*
-6. Click **Save Changes**.
-
-Your database is now independent of the web service code — data will **never be lost** on redeploys!
+> **How it works:**  
+> - Every time an expense is saved, edited, or a PIN is changed, Dubai Diary pushes the update to JSONBin in the background.  
+> - When Render redeploys or restarts on a new container, Dubai Diary automatically restores all your expenses and custom PINs from JSONBin!
 
 ---
 

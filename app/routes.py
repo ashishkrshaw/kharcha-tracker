@@ -13,6 +13,7 @@ from flask_login import login_user, logout_user, login_required, current_user
 from flask_mail import Message
 from . import app, db, mail
 from .models import User, Expense, EditRequest
+from .jsonbin_sync import trigger_cloud_backup
 
 EDIT_GRACE_PERIOD_MINUTES = 12
 
@@ -100,6 +101,7 @@ def change_pin():
         # Set new PIN
         current_user.set_pin(new_pin)
         db.session.commit()
+        trigger_cloud_backup(current_app._get_current_object())
 
         notify_via_email(
             subject=f"🔐 Security Alert: PIN Changed for {current_user.name}",
@@ -187,6 +189,7 @@ def add_expense():
         )
         db.session.add(expense)
         db.session.commit()
+        trigger_cloud_backup(current_app._get_current_object())
 
         # Send email alert
         notify_via_email(
@@ -256,6 +259,7 @@ def edit_expense(expense_id):
             expense.currency = new_curr
             expense.is_edited = True
             db.session.commit()
+            trigger_cloud_backup(current_app._get_current_object())
 
             notify_via_email(
                 subject=f"✏️ Expense Edited Directly by {current_user.name}",
@@ -288,6 +292,7 @@ def edit_expense(expense_id):
             )
             db.session.add(edit_req)
             db.session.commit()
+            trigger_cloud_backup(current_app._get_current_object())
 
             notify_via_email(
                 subject=f"⚠️ Edit Request from {current_user.name} (Action Required)",
@@ -339,6 +344,7 @@ def approve_edit(req_id):
     edit_req.status = "approved"
     edit_req.reviewed_at = datetime.datetime.utcnow()
     db.session.commit()
+    trigger_cloud_backup(current_app._get_current_object())
 
     notify_via_email(
         subject=f"✅ Edit Request Approved by {current_user.name}",
@@ -370,6 +376,7 @@ def reject_edit(req_id):
     edit_req.status = "rejected"
     edit_req.reviewed_at = datetime.datetime.utcnow()
     db.session.commit()
+    trigger_cloud_backup(current_app._get_current_object())
 
     notify_via_email(
         subject=f"❌ Edit Request Rejected by {current_user.name}",

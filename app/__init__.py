@@ -13,13 +13,14 @@ app.config['SECRET_KEY'] = os.getenv('SECRET_KEY', 'dubai-diary-secure-key-2026'
 # -------------------------------------------------------------
 # Permanent Database Configuration (Never get erased)
 # -------------------------------------------------------------
-# 1. If DATABASE_URL is set (e.g. Free Render PostgreSQL or Supabase/Neon),
-#    use it for 100% permanent persistence across redeploys.
-# 2. If a Render Persistent Disk is mounted at /var/data or /data, use that SQLite path.
-# 3. Otherwise fallback to local SQLite database.
+# 1. JSONBin.io: If JSONBIN_API_KEY and JSONBIN_BIN_ID are set,
+#    data is automatically synced and restored from the cloud across redeploys!
+# 2. If DATABASE_URL is set (e.g. Free Render PostgreSQL or Supabase/Neon),
+#    use it for database persistence.
+# 3. If a Render Persistent Disk is mounted at /var/data or /data, use that SQLite path.
+# 4. Otherwise fallback to local SQLite database.
 db_url = os.getenv('DATABASE_URL')
 if db_url:
-    # Render PostgreSQL URLs sometimes start with postgres:// which SQLAlchemy deprecated
     if db_url.startswith("postgres://"):
         db_url = db_url.replace("postgres://", "postgresql://", 1)
     app.config['SQLALCHEMY_DATABASE_URI'] = db_url
@@ -48,6 +49,7 @@ login_manager.login_message = 'Please login with your secret PIN to access Dubai
 login_manager.login_message_category = 'warning'
 
 from .models import User
+from .jsonbin_sync import sync_from_jsonbin, is_jsonbin_configured
 from . import routes  # noqa: E402
 
 @login_manager.user_loader
@@ -56,6 +58,10 @@ def load_user(user_id):
 
 with app.app_context():
     db.create_all()
+
+    # If JSONBin is configured, restore all expenses & users from cloud
+    if is_jsonbin_configured():
+        sync_from_jsonbin(app)
 
     # Migrate any old "Uncle" account name to "Amit Uncle"
     old_uncle = User.query.filter_by(name="Uncle").first()
@@ -80,4 +86,3 @@ with app.app_context():
         db.session.add(ashish)
 
     db.session.commit()
-    # Note: NO demo expenses are created. Starts with a clean 0-expense ledger!
