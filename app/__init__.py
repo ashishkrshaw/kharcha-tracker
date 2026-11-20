@@ -8,11 +8,31 @@ from dotenv import load_dotenv
 load_dotenv()
 
 app = Flask(__name__, template_folder='../templates')
-app.config['SECRET_KEY'] = os.getenv('SECRET_KEY', 'default-dev-secret-key-change-me')
-app.config['SQLALCHEMY_DATABASE_URI'] = os.getenv('DATABASE_URL', 'sqlite:///expense.db')
+app.config['SECRET_KEY'] = os.getenv('SECRET_KEY', 'dubai-diary-secure-key-2026')
+
+# -------------------------------------------------------------
+# Permanent Database Configuration (Never get erased)
+# -------------------------------------------------------------
+# 1. If DATABASE_URL is set (e.g. Free Render PostgreSQL or Supabase/Neon),
+#    use it for 100% permanent persistence across redeploys.
+# 2. If a Render Persistent Disk is mounted at /var/data or /data, use that SQLite path.
+# 3. Otherwise fallback to local SQLite database.
+db_url = os.getenv('DATABASE_URL')
+if db_url:
+    # Render PostgreSQL URLs sometimes start with postgres:// which SQLAlchemy deprecated
+    if db_url.startswith("postgres://"):
+        db_url = db_url.replace("postgres://", "postgresql://", 1)
+    app.config['SQLALCHEMY_DATABASE_URI'] = db_url
+elif os.path.exists('/var/data'):
+    app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:////var/data/dubaidiary.db'
+elif os.path.exists('/data'):
+    app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:////data/dubaidiary.db'
+else:
+    app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///dubaidiary.db'
+
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 
-# Mail settings
+# Mail settings (Gmail SMTP)
 app.config['MAIL_SERVER'] = 'smtp.gmail.com'
 app.config['MAIL_PORT'] = 587
 app.config['MAIL_USE_TLS'] = True
@@ -24,7 +44,7 @@ db = SQLAlchemy(app)
 mail = Mail(app)
 login_manager = LoginManager(app)
 login_manager.login_view = 'login'
-login_manager.login_message = 'Please login with your PIN to access this page.'
+login_manager.login_message = 'Please login with your secret PIN to access Dubai Diary.'
 login_manager.login_message_category = 'warning'
 
 from .models import User
@@ -36,13 +56,28 @@ def load_user(user_id):
 
 with app.app_context():
     db.create_all()
-    # Ensure default accounts exist
-    if not User.query.filter_by(name="Uncle").first():
-        uncle = User(name="Uncle")
-        uncle.set_pin("1234")
-        db.session.add(uncle)
+
+    # Migrate any old "Uncle" account name to "Amit Uncle"
+    old_uncle = User.query.filter_by(name="Uncle").first()
+    if old_uncle:
+        old_uncle.name = "Amit Uncle"
+        db.session.commit()
+
+    # Default Hard PINs
+    # Ashish: 839217 (or from env ASHISH_DEFAULT_PIN)
+    # Amit Uncle: 591428 (or from env AMIT_UNCLE_DEFAULT_PIN)
+    ashish_default_pin = os.getenv("ASHISH_DEFAULT_PIN", "839217")
+    uncle_default_pin = os.getenv("AMIT_UNCLE_DEFAULT_PIN", "591428")
+
+    if not User.query.filter_by(name="Amit Uncle").first():
+        amit_uncle = User(name="Amit Uncle")
+        amit_uncle.set_pin(uncle_default_pin)
+        db.session.add(amit_uncle)
+
     if not User.query.filter_by(name="Ashish").first():
         ashish = User(name="Ashish")
-        ashish.set_pin("5678")
+        ashish.set_pin(ashish_default_pin)
         db.session.add(ashish)
+
     db.session.commit()
+    # Note: NO demo expenses are created. Starts with a clean 0-expense ledger!

@@ -1,49 +1,49 @@
 {% extends "base.html" %}
 
 {% block content %}
-<div class="row justify-content-center pt-4">
-  <div class="col-md-5 col-sm-8">
-    <div class="card shadow-sm p-4">
+<div class="row justify-content-center pt-3">
+  <div class="col-md-5 col-sm-9">
+    <div class="card shadow p-4">
       <div class="text-center mb-4">
-        <div class="d-inline-flex align-items-center justify-content-center bg-primary text-white rounded-circle mb-3" style="width: 60px; height: 60px;">
-          <i class="bi bi-shield-lock-fill fs-2"></i>
+        <div class="d-inline-flex align-items-center justify-content-center bg-dark text-warning rounded-circle mb-3 shadow" style="width: 70px; height: 70px;">
+          <i class="bi bi-journal-bookmark-fill fs-2"></i>
         </div>
-        <h3 class="fw-bold">PIN Login</h3>
-        <p class="text-muted small">Select your account and enter your secret PIN</p>
+        <h3 class="fw-bold text-dark mb-0">Dubai Diary</h3>
+        <p class="text-muted small">Expense Ledger for Ashish &amp; Amit Uncle</p>
       </div>
 
       <form method="post" action="{{ url_for('login') }}">
         <div class="mb-3">
-          <label class="form-label fw-semibold">Select Account</label>
+          <label class="form-label fw-semibold">Select Who You Are</label>
           <select name="name" id="userSelect" class="form-select form-select-lg" required>
-            <option value="" disabled selected>-- Select Person --</option>
+            <option value="" disabled selected>-- Select Account --</option>
             {% for u in users %}
               <option value="{{ u.name }}">{{ u.name }}</option>
             {% else %}
               <option value="Ashish">Ashish</option>
-              <option value="Uncle">Uncle</option>
+              <option value="Amit Uncle">Amit Uncle</option>
             {% endfor %}
           </select>
         </div>
 
         <div class="mb-4">
-          <label class="form-label fw-semibold">Enter Your PIN</label>
+          <label class="form-label fw-semibold">Enter Secret PIN</label>
           <div class="input-group input-group-lg">
-            <span class="input-group-text"><i class="bi bi-key"></i></span>
-            <input type="password" name="pin" class="form-control" placeholder="••••" required autofocus inputmode="numeric" pattern="[0-9]*">
+            <span class="input-group-text bg-light"><i class="bi bi-shield-lock"></i></span>
+            <input type="password" name="pin" class="form-control" placeholder="Enter PIN" required autofocus inputmode="numeric">
           </div>
-          <div class="form-text">Keep your PIN confidential. Each person has a separate PIN.</div>
+          <div class="form-text">Each account has a separate secret PIN.</div>
         </div>
 
-        <button type="submit" class="btn btn-primary btn-lg w-100 fw-bold">
-          <i class="bi bi-box-arrow-in-right me-1"></i> Unlock Dashboard
+        <button type="submit" class="btn btn-primary btn-lg w-100 fw-bold shadow-sm">
+          <i class="bi bi-box-arrow-in-right me-1"></i> Unlock Dubai Diary
         </button>
       </form>
 
-      <div class="mt-4 p-3 bg-light rounded text-center small text-muted">
-        <strong>Default Setup:</strong><br>
-        Ashish (PIN: <code>5678</code>) &bull; Uncle (PIN: <code>1234</code>)<br>
-        <span class="text-danger">⚠️ You can change your PIN anytime after logging in!</span>
+      <div class="mt-4 p-3 bg-light rounded-3 border text-center small text-muted">
+        <div class="fw-bold text-dark mb-1"><i class="bi bi-key-fill text-warning me-1"></i> Default Secure PINs:</div>
+        <div><strong>Ashish:</strong> <code>839217</code> &bull; <strong>Amit Uncle:</strong> <code>591428</code></div>
+        <div class="text-secondary mt-1">🔒 You can change your PIN anytime after logging in via the "Change PIN" menu.</div>
       </div>
     </div>
   </div>

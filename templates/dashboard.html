@@ -3,11 +3,13 @@
 {% block content %}
 <div class="d-flex flex-wrap justify-content-between align-items-center mb-4 gap-2">
   <div>
-    <h2 class="fw-bold mb-1">Expense Dashboard</h2>
-    <p class="text-muted mb-0">Separate calculation for both sides without any confusion</p>
+    <h2 class="fw-bold mb-1 text-dark">
+      <i class="bi bi-journal-text text-warning me-2"></i>Dubai Diary
+    </h2>
+    <p class="text-muted mb-0">Separate calculation for Ashish &amp; Amit Uncle &bull; Zero confusion</p>
   </div>
   <div class="d-flex gap-2">
-    <a href="{{ url_for('add_expense') }}" class="btn btn-primary fw-semibold">
+    <a href="{{ url_for('add_expense') }}" class="btn btn-primary fw-bold shadow-sm">
       <i class="bi bi-plus-lg me-1"></i> Add New Expense
     </a>
   </div>
@@ -17,13 +19,13 @@
 <div class="row g-3 mb-4">
   {% for u in all_users %}
   <div class="col-md-6">
-    <div class="card p-3 stat-card {% if u.name == 'Ashish' %}stat-ashish{% elif u.name == 'Uncle' %}stat-uncle{% endif %}">
+    <div class="card p-3 stat-card {% if u.name == 'Ashish' %}stat-ashish{% elif u.name == 'Amit Uncle' %}stat-uncle{% endif %} shadow-sm">
       <div class="d-flex justify-content-between align-items-center">
         <div>
-          <span class="badge {% if u.name == 'Ashish' %}badge-ashish{% elif u.name == 'Uncle' %}badge-uncle{% else %}badge-other{% endif %} mb-2">
-            <i class="bi bi-person-fill"></i> {{ u.name }}'s Total Expenses
+          <span class="badge {% if u.name == 'Ashish' %}badge-ashish{% elif u.name == 'Amit Uncle' %}badge-uncle{% else %}badge-other{% endif %} mb-2 px-3 py-2 fs-6 rounded-pill">
+            <i class="bi bi-person-fill me-1"></i> {{ u.name }}'s Total Expenses
           </span>
-          <div class="mt-1">
+          <div class="mt-2">
             {% if totals_by_user[u.name] %}
               {% for curr, total in totals_by_user[u.name].items() %}
                 <div class="fs-4 fw-bold text-dark">
@@ -31,12 +33,12 @@
                 </div>
               {% endfor %}
             {% else %}
-              <div class="fs-5 text-muted fst-italic">No expenses recorded yet</div>
+              <div class="fs-6 text-muted fst-italic">No expenses recorded yet</div>
             {% endif %}
           </div>
         </div>
-        <div class="text-secondary opacity-50 display-6">
-          <i class="bi {% if u.name == 'Ashish' %}bi-cash-coin{% else %}bi-wallet{% endif %}"></i>
+        <div class="text-secondary opacity-25 display-5 pe-2">
+          <i class="bi {% if u.name == 'Ashish' %}bi-cash-coin{% else %}bi-wallet2{% endif %}"></i>
         </div>
       </div>
     </div>
@@ -46,7 +48,7 @@
 
 <!-- ACTION REQUIRED: EDIT REQUESTS FROM THE OTHER PERSON -->
 {% if requests_to_review %}
-<div class="card mb-4 border-warning border-start border-4">
+<div class="card mb-4 border-warning border-start border-4 shadow-sm">
   <div class="card-header bg-warning bg-opacity-10 py-3">
     <h5 class="mb-0 fw-bold text-dark">
       <i class="bi bi-exclamation-triangle-fill text-warning me-2"></i>
@@ -69,7 +71,7 @@
           {% for req in requests_to_review %}
           <tr>
             <td>
-              <span class="badge {% if req.requester.name == 'Ashish' %}badge-ashish{% elif req.requester.name == 'Uncle' %}badge-uncle{% else %}badge-other{% endif %}">
+              <span class="badge {% if req.requester.name == 'Ashish' %}badge-ashish{% elif req.requester.name == 'Amit Uncle' %}badge-uncle{% else %}badge-other{% endif %} rounded-pill px-2 py-1">
                 {{ req.requester.name }}
               </span>
             </td>
@@ -84,7 +86,7 @@
             <td class="small text-muted">
               {{ req.created_at.strftime('%d %b, %I:%M %p') }}
             </td>
-            <td class="text-end">
+            <td class="text-end pe-3">
               <form method="post" action="{{ url_for('approve_edit', req_id=req.id) }}" class="d-inline">
                 <button type="submit" class="btn btn-success btn-sm fw-bold">
                   <i class="bi bi-check-lg"></i> Approve
@@ -107,13 +109,13 @@
 
 <!-- MY PENDING REQUESTS -->
 {% if my_pending_requests %}
-<div class="alert alert-secondary mb-4">
+<div class="alert alert-secondary mb-4 shadow-sm">
   <h6 class="fw-bold mb-2"><i class="bi bi-clock-history me-1"></i> Your Pending Edit Requests:</h6>
   <ul class="mb-0 small">
     {% for req in my_pending_requests %}
       <li>
         Requested change for <strong>"{{ req.expense.description }}"</strong> to <strong>{{ req.new_currency }} {{ "{:,.2f}".format(req.new_amount) }} - {{ req.new_description }}</strong>.
-        <span class="badge bg-warning text-dark ms-1">Waiting for 2nd person approval</span>
+        <span class="badge bg-warning text-dark ms-1">Waiting for approval</span>
       </li>
     {% endfor %}
   </ul>
@@ -121,10 +123,10 @@
 {% endif %}
 
 <!-- ALL EXPENSES TABLE -->
-<div class="card">
+<div class="card shadow-sm">
   <div class="card-header bg-white py-3 d-flex justify-content-between align-items-center">
     <h5 class="mb-0 fw-bold">
-      <i class="bi bi-journal-text me-2 text-primary"></i>All Transactions Ledger
+      <i class="bi bi-journal-bookmark me-2 text-primary"></i>All Transactions Ledger
     </h5>
     <span class="text-muted small">Total entries: {{ expenses|length }}</span>
   </div>
@@ -133,11 +135,11 @@
       <table class="table table-hover align-middle mb-0">
         <thead class="table-light">
           <tr>
-            <th>Date & Time</th>
+            <th>Date &amp; Time</th>
             <th>Paid By</th>
             <th>Description</th>
             <th>Amount</th>
-            <th class="text-end">Edit Options</th>
+            <th class="text-end pe-3">Edit Options</th>
           </tr>
         </thead>
         <tbody>
@@ -150,20 +152,20 @@
               {{ exp.timestamp.strftime('%d %b %Y, %I:%M %p') }}
             </td>
             <td>
-              <span class="badge {% if exp.owner.name == 'Ashish' %}badge-ashish{% elif exp.owner.name == 'Uncle' %}badge-uncle{% else %}badge-other{% endif %} px-2 py-1">
+              <span class="badge {% if exp.owner.name == 'Ashish' %}badge-ashish{% elif exp.owner.name == 'Amit Uncle' %}badge-uncle{% else %}badge-other{% endif %} px-2 py-1 rounded-pill">
                 {{ exp.owner.name }}
               </span>
             </td>
             <td>
-              <div class="fw-semibold">{{ exp.description }}</div>
+              <div class="fw-semibold text-dark">{{ exp.description }}</div>
               {% if exp.is_edited %}
                 <span class="badge bg-light text-secondary border small">Edited</span>
               {% endif %}
             </td>
             <td>
-              <span class="fw-bold fs-6">{{ exp.currency }} {{ "{:,.2f}".format(exp.amount) }}</span>
+              <span class="fw-bold fs-6 text-dark">{{ exp.currency }} {{ "{:,.2f}".format(exp.amount) }}</span>
             </td>
-            <td class="text-end">
+            <td class="text-end pe-3">
               {% if is_owner %}
                 {% if can_direct_edit %}
                   <a href="{{ url_for('edit_expense', expense_id=exp.id) }}" class="btn btn-outline-success btn-sm">
@@ -175,15 +177,19 @@
                   </a>
                 {% endif %}
               {% else %}
-                <span class="text-muted small fst-italic">Created by {{ exp.owner.name }}</span>
+                <span class="text-muted small fst-italic">Logged by {{ exp.owner.name }}</span>
               {% endif %}
             </td>
           </tr>
           {% else %}
           <tr>
-            <td colspan="5" class="text-center py-4 text-muted">
-              <i class="bi bi-inbox fs-2 d-block mb-2"></i>
-              No expenses recorded yet. Click "Add New Expense" to get started!
+            <td colspan="5" class="text-center py-5 text-muted">
+              <i class="bi bi-journal-x fs-1 d-block mb-2 text-secondary opacity-50"></i>
+              <div class="fw-semibold fs-5">No expenses recorded yet in Dubai Diary</div>
+              <p class="small text-muted mb-3">Add your first expense for Visa, travel, food, or shopping!</p>
+              <a href="{{ url_for('add_expense') }}" class="btn btn-sm btn-primary">
+                <i class="bi bi-plus-circle me-1"></i> Add First Expense
+              </a>
             </td>
           </tr>
           {% endfor %}
